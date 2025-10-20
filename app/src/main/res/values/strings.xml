@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SistemaDeLocalizacao</string>
+    <string name="gnss_button">GNSS Plot</string>
+</resources>
