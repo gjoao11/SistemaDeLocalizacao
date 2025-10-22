@@ -1,22 +1,25 @@
 package com.example.sistemadelocalizacao;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.GnssStatus;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Set;
 
 public class GNSSView extends View {
     private GnssStatus gnssStatus = null;
     private int r;
     private int height, width;
     private final Paint paint = new Paint();
+    private SharedPreferences sharedPreferences;
 
     public GNSSView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -47,6 +50,13 @@ public class GNSSView extends View {
         return (int) (-y + height / 2);
     }
 
+    private Set<Integer> allowedGNSS = Set.of(
+            GnssStatus.CONSTELLATION_GPS,
+            GnssStatus.CONSTELLATION_GLONASS,
+            GnssStatus.CONSTELLATION_GALILEO,
+            GnssStatus.CONSTELLATION_BEIDOU
+    );
+
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
@@ -65,25 +75,40 @@ public class GNSSView extends View {
         canvas.drawLine(computeXc(0), computeYc(-r), computeXc(0), computeYc(r), paint);
         canvas.drawLine(computeXc(-r), computeYc(0), computeXc(r), computeYc(0), paint);
 
+        sharedPreferences = getContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+
+        boolean gpsAllowed =  sharedPreferences.getBoolean("GPS", true);
+        boolean glonassAllowed = sharedPreferences.getBoolean("GLONASS", true);
+        boolean galileoAllowed = sharedPreferences.getBoolean("GALILEO", true);
+        boolean beidouAllowed = sharedPreferences.getBoolean("BEIDOU", true);
+        boolean notUsedInFixAllowed = sharedPreferences.getBoolean("notUsedInFix", true);
+
         paint.setStyle(Paint.Style.FILL);
 
         if (gnssStatus != null) {
             for (int i = 0; i < gnssStatus.getSatelliteCount(); i++) {
                 int constellationType = gnssStatus.getConstellationType(i);
+
                 boolean usedInFix = gnssStatus.usedInFix(i);
+                if (!allowedGNSS.contains(constellationType)) continue;
+                if (!notUsedInFixAllowed && !usedInFix) continue;
+                if (!gpsAllowed && constellationType == GnssStatus.CONSTELLATION_GPS) continue;
+                if (!glonassAllowed && constellationType == GnssStatus.CONSTELLATION_GLONASS) continue;
+                if (!galileoAllowed && constellationType == GnssStatus.CONSTELLATION_GALILEO) continue;
+                if (!beidouAllowed && constellationType == GnssStatus.CONSTELLATION_BEIDOU) continue;
 
                 switch (constellationType) {
                     case GnssStatus.CONSTELLATION_GPS:
-                        paint.setColor(Color.BLUE);
+                        paint.setColor(Color.parseColor("#E40066"));
                         break;
                     case GnssStatus.CONSTELLATION_GLONASS:
-                        paint.setColor(Color.RED);
+                        paint.setColor(Color.parseColor("#345995"));
                         break;
                     case GnssStatus.CONSTELLATION_GALILEO:
-                        paint.setColor(Color.MAGENTA);
+                        paint.setColor(Color.parseColor("#4D8B31"));
                         break;
                     case GnssStatus.CONSTELLATION_BEIDOU:
-                        paint.setColor(Color.GREEN);
+                        paint.setColor(Color.parseColor("#D36135"));
                         break;
                     // Adicione outros casos se necessário (QZSS, SBAS, etc.)
                     default:
@@ -96,16 +121,19 @@ public class GNSSView extends View {
                 float x = (float) (r * Math.cos(Math.toRadians(el)) * Math.sin(Math.toRadians(az)));
                 float y = (float) (r * Math.cos(Math.toRadians(el)) * Math.cos(Math.toRadians(az)));
 
-                if (!usedInFix) {
-                    canvas.drawCircle(computeXc(x), computeYc(y), 10, paint);
-                } else {
-                    canvas.drawRect(computeXc(x) - 15, computeYc(y) - 10, computeXc(x) + 5, computeYc(y) + 10, paint);
-                }
+                canvas.drawCircle(computeXc(x), computeYc(y), 12, paint);
 
                 paint.setTextAlign(Paint.Align.LEFT);
                 paint.setTextSize(30);
                 String satID = gnssStatus.getSvid(i) + "";
-                canvas.drawText(satID, computeXc(x) + 10, computeYc(y) + 10, paint);
+                canvas.drawText(satID, computeXc(x) + 16, computeYc(y) + 10, paint);
+
+                if (usedInFix) {
+                    paint.setStyle(Paint.Style.STROKE);
+                    paint.setColor(Color.BLACK);
+                    canvas.drawCircle(computeXc(x), computeYc(y), 14, paint);
+                    paint.setStyle(Paint.Style.FILL);
+                }
             }
         }
     }

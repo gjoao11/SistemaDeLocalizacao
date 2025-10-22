@@ -2,4 +2,11 @@
 <resources>
     <string name="app_name">SistemaDeLocalizacao</string>
     <string name="gnss_button">GNSS Plot</string>
+    <string name="dialog_title">Configurações de Visualização</string>
+    <string name="viewed_constellations">Constelações Visualizadas</string>
+    <string name="not_fix_used">Mostrar Satélites não utilizados no FIX</string>
+    <string name="checkbox_1">GPS</string>
+    <string name="checkbox_2">GLONASS</string>
+    <string name="checkbox_3">GALILEO</string>
+    <string name="checkbox_4">BEIDOU</string>
 </resources>

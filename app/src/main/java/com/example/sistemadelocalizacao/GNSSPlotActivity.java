@@ -2,6 +2,7 @@ package com.example.sistemadelocalizacao;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.GnssStatus;
 import android.location.Location;
@@ -23,7 +24,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.stream.IntStream;
 
-public class GnssPlotActivity extends AppCompatActivity {
+public class GNSSPlotActivity extends AppCompatActivity {
     private static final int REQUEST_LOCATION_UPDATES = 1;
     private LocationManager locationManager;
     LocationListener locationListener;
@@ -51,6 +52,10 @@ public class GnssPlotActivity extends AppCompatActivity {
         quantityInFixTextView = findViewById(R.id.text_fix_value);
 
         startGnssUpdate();
+        gnssView.setOnClickListener(v -> {
+            Intent i = new Intent(GNSSPlotActivity.this, DialogConfigActivity.class);
+            startActivity(i);
+        });
     }
 
     @Override

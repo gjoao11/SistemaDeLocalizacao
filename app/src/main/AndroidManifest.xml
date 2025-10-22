@@ -15,7 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SistemaDeLocalizacao">
         <activity
-            android:name=".GnssPlotActivity"
+            android:name=".DialogConfigActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Dialog"/>
+        <activity
+            android:name=".GNSSPlotActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         Button buttonGNSSPlot = findViewById(R.id.button_gnss_plot);
 
         buttonGNSSPlot.setOnClickListener(v -> {
-            Intent i = new Intent(MainActivity.this, GnssPlotActivity.class);
+            Intent i = new Intent(MainActivity.this, GNSSPlotActivity.class);
             startActivity(i);
         });
     }
