@@ -7,17 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".GNSSPlotActivity">
 
-    <com.example.sistemadelocalizacao.GNSSView
-        android:id="@+id/GNSSViewId"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
     <TextView
         android:id="@+id/text_quantity_label"
         android:layout_width="wrap_content"
@@ -59,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Círculo: Não usado no fix"
+        android:text="Com borda preta"
         app:layout_constraintBottom_toBottomOf="@+id/GNSSViewId"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -68,7 +57,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Quadrado: Usado no fix"
+        android:text="Satélite usado no Fix"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -77,16 +67,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="GPS: Azul"
+        android:background="#E40066"
+        android:text="GPS"
+        android:textColor="#fff"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView4"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.example.sistemadelocalizacao.GNSSView
+        android:id="@+id/GNSSViewId"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:mapColor="#CCCCDD" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="GLONASS: Vermelho"
+        android:background="#345995"
+        android:text="GLONASS"
+        android:textColor="#fff"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView5"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -95,7 +103,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="GALILEO: Magenta"
+        android:background="#4D8B31"
+        android:text="GALILEO"
+        android:textColor="#fff"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView6"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -105,7 +116,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
-        android:text="BEIDOU: Verde"
+        android:background="#D36135"
+        android:text="BEIDOU"
+        android:textColor="#fff"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintStart_toStartOf="parent" />
 

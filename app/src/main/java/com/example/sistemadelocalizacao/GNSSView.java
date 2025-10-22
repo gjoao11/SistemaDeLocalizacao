@@ -2,6 +2,7 @@ package com.example.sistemadelocalizacao;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,9 +21,20 @@ public class GNSSView extends View {
     private int height, width;
     private final Paint paint = new Paint();
     private SharedPreferences sharedPreferences;
+    private int mapColor;
 
     public GNSSView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.GNSSView,
+                0, 0);
+
+        try {
+            mapColor = a.getColor(R.styleable.GNSSView_mapColor, Color.LTGRAY);
+        } finally {
+            a.recycle();
+        }
     }
 
     @Override
@@ -63,7 +75,7 @@ public class GNSSView extends View {
 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
-        paint.setColor(Color.LTGRAY);
+        paint.setColor(mapColor);
 
         int radius = r;
         canvas.drawCircle(computeXc(0), computeYc(0), radius, paint);
