@@ -25,13 +25,18 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.stream.IntStream;
 
 public class GNSSPlotActivity extends AppCompatActivity {
+    // Definir código para identificar solicitação de permissão da localização
     private static final int REQUEST_LOCATION_UPDATES = 1;
     private LocationManager locationManager;
     LocationListener locationListener;
     GnssStatus.Callback gnssCallback;
+
+    // View para exibir o radar de satélites
     GNSSView gnssView;
 
+    // TextView para exibir quantidade total de satélites
     private TextView quantityVisibleTextView;
+    // TextView para exibir quantidade total de satélites usados no fix
     private TextView quantityInFixTextView;
 
     @Override
@@ -61,16 +66,17 @@ public class GNSSPlotActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        // Caso a app seja parada, para atualização de localização
         stopGNSSUpdate();
     }
 
     public void startGnssUpdate() {
-        // Se a app já possui a permissão, ativa a chamada para ataaliazações
+        // Se a permissão foi dada, ativa a chamada para atualizações da localização
         if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED) {
-            // A permissão foi dada– OK vá em frente
-            // objeto intância de uma classe anônima que implementa LocationListener
+                PackageManager.PERMISSION_GRANTED
+        ) {
+            // Recebe uma instância de uma classe anônima que implementa LocationListener
             locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(@NonNull Location location) {
@@ -89,39 +95,59 @@ public class GNSSPlotActivity extends AppCompatActivity {
                 public void onProviderDisabled(@NonNull String provider) {
                 }
             };
-            // Informa o provedor de localização, tempo e distância mínimos e o escutador
-            locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,   // provedor de localização
-                    1000,                           // intervalo mínimo (ms)
-                    0,                              // distância mínima (m)
-                    locationListener);              // objeto que irá processar as localizações
 
-            // objeto intância de uma classe anônima que implementa GnssStatus.Callback
+            // Informa:
+            // Provedor de localização,
+            // Intervalo de tempo mínimo em ms para as atualizações de localização
+            // Distância mínima em metros para as atualizações de localização
+            // Objeto que irá processar as atualizações de localização
+            locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,   // Provedor de localização
+                    1000,                           // Intervalo mínimo (ms)
+                    0,                              // Distância mínima (m)
+                    locationListener                // Escutador de atualizações
+            );
+
+            // Recebe uma instância de uma classe anônima que implementa GnssStatus.Callback
             gnssCallback = new GnssStatus.Callback() {
                 @Override
                 public void onSatelliteStatusChanged(@NonNull GnssStatus status) {
                     super.onSatelliteStatusChanged(status);
-                    // processa as informações do sistema de satélite
+                    // Processa as informações do sistema de satélite
                     gnssView.newStatus(status);
 
+                    // Obter número de satélites
                     int satelliteCount = status.getSatelliteCount();
+
+                    // Obter número de satélites usados no fix
                     int satellitesInFixCount = (int) IntStream.range(0, satelliteCount).filter(status::usedInFix).count();
 
-                    // Atualiza os TextViews na thread principal (UI thread)
-                    // Usar runOnUiThread é uma boa prática para garantir que a UI seja atualizada corretamente
-                    runOnUiThread(() -> {
-                        // Monta a string e atualiza o TextView de satélites visíveis
-                        quantityVisibleTextView.setText(String.format("%d", satelliteCount));
+                    // Recebemos o seguinte erro ao fazer o for normal:
+                    // Variable used in lambda expression should be final or effectively final
+                    // E alteramos para o código sugerido pela IDE
+                    // Código original:
+                    // Obter número de satélites usados no fix
+                    // int satellitesInFixCount = 0;
+                    // Percorre cada satélite usando seu índice, de 0 até o total de satélites
+                    // for (int i = 0; i < satelliteCount; i++) {
+                    //      Para cada satélite (i), verifica se ele está sendo usado no fix
+                    //      if (status.usedInFix(i)) {
+                    //          Se estiver, incrementa o contador
+                    //          satellitesInFixCount++;
+                    //      }
+                    // }
 
-                        // Monta a string e atualiza o TextView de satélites em uso
-                        quantityInFixTextView.setText(String.format("%d", satellitesInFixCount));
-                    });
+                    // Atualiza o TextView de satélites visíveis
+                    quantityVisibleTextView.setText(String.format("%d", satelliteCount));
+
+                    // Atualiza o TextView de satélites em uso
+                    quantityInFixTextView.setText(String.format("%d", satellitesInFixCount));
                 }
             };
             // informa o escutador do sistema de satelites e a thread para processar essas infos
             locationManager.registerGnssStatusCallback(gnssCallback, new Handler(Looper.getMainLooper()));
         } else {
-            // Solicite a permissão
+            // Se a permissão não foi dada, solicita ao usuário
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION_UPDATES);
@@ -146,12 +172,13 @@ public class GNSSPlotActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Verificar se o código da solicitação é o código definido para a solicitação de permissão da localização
         if (requestCode == REQUEST_LOCATION_UPDATES) {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // O usuário acabou de dar a permissão
+                // Se o usuário deu a permissão solicitava, ativa a chamada para atualizações da localização
                 startGnssUpdate();
             } else {
-                // O usuário não deu a permissão solicitada
+                // Se o usuário não deu a permissão solicitava, encerra a atividade
                 Toast.makeText(
                         this,
                         "Sem permissão para mostrar informações do sistema GNSS",

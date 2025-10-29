@@ -23,8 +23,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Botão para iniciar GNSSPlotActivity
         Button buttonGNSSPlot = findViewById(R.id.button_gnss_plot);
 
+        // setOnClickListener para iniciar GNSSPlotActivity
         buttonGNSSPlot.setOnClickListener(v -> {
             Intent i = new Intent(MainActivity.this, GNSSPlotActivity.class);
             startActivity(i);
